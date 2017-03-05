@@ -2,9 +2,14 @@
 
 gunarchiver (Go Unarchiver) is a small archive extraction tool.
 
-# TODO:
+# Future Work:
 
-- extend README ;)
+(not necessarily implemented soon or ever)
+
+- Extend README ;)
+- UI for other platforms (Linux, macOS). But low priority since other platform already have similar tools that inspired me to develop this one.
+- Preferences pane for customization.
+- i18n (currently hardcoded to english)
 
 # License
 
