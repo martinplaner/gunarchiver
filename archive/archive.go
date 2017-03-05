@@ -1,11 +1,14 @@
 package archive
 
 import (
+	"context"
 	"fmt"
 	"io"
 	"os"
 	"path/filepath"
 	"strings"
+
+	"github.com/martinplaner/gunarchiver/progress"
 )
 
 // Archive represent an archive and provides methods for iterating through its files.
@@ -31,8 +34,16 @@ type File interface {
 }
 
 // Extract extracts the Archive a to the specified path
-func Extract(a Archive, path string) error {
+func Extract(ctx context.Context, a Archive, path string) error {
+	pChan, pChanOk := ctx.Value(progress.ProgressChan).(chan progress.Progress)
+
 	for {
+		select {
+		case <-ctx.Done():
+			return ctx.Err()
+		default:
+		}
+
 		file, err := a.Next()
 		if err == io.EOF {
 			// end of archive; finished
@@ -40,6 +51,10 @@ func Extract(a Archive, path string) error {
 		}
 		if err != nil {
 			return err
+		}
+
+		if pChanOk {
+			pChan <- progress.Progress{CurrentFile: file.Path(), Percentage: 50}
 		}
 
 		fullPath := filepath.Join(path, file.Path())

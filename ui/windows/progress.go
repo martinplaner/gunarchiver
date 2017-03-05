@@ -3,22 +3,23 @@
 package windows
 
 import (
+	"context"
+
 	"github.com/lxn/walk"
 	. "github.com/lxn/walk/declarative"
+	"github.com/martinplaner/gunarchiver/progress"
 	"github.com/martinplaner/gunarchiver/ui"
 )
 
-type ProgressWindow struct {
+type progressWindow struct {
 	mainWindow      *walk.MainWindow
 	progressBar     *walk.ProgressBar
 	requestedCancel bool
+	cancel          context.CancelFunc
+	err             error
 }
 
-func NewProgressWindow() *ProgressWindow {
-	return &ProgressWindow{}
-}
-
-func (w *ProgressWindow) Show(progress ui.Progress) error {
+func (w *progressWindow) Show() error {
 
 	var cancelButton *walk.PushButton
 
@@ -41,6 +42,7 @@ func (w *ProgressWindow) Show(progress ui.Progress) error {
 							cancelButton.SetText("Canceling...")
 							cancelButton.SetEnabled(false)
 							w.requestedCancel = true
+							w.cancel()
 						},
 					},
 				},
@@ -52,18 +54,24 @@ func (w *ProgressWindow) Show(progress ui.Progress) error {
 	return err
 }
 
-func (w *ProgressWindow) Update(p ui.Progress) {
-	w.progressBar.SetValue(p.Percentage)
+func (w *progressWindow) Update(p progress.Progress) {
+	if w.progressBar != nil {
+		w.progressBar.SetValue(p.Percentage)
+	}
 
-	pi := w.mainWindow.ProgressIndicator()
-	pi.SetTotal(uint32(ui.ProgressMaxValue))
-	pi.SetCompleted(uint32(p.Percentage))
+	if w.mainWindow != nil {
+		pi := w.mainWindow.ProgressIndicator()
+		pi.SetTotal(uint32(ui.ProgressMaxValue))
+		pi.SetCompleted(uint32(p.Percentage))
+	}
 }
 
-func (w *ProgressWindow) Close() {
+func (w *progressWindow) Close() {
+	for w.mainWindow == nil || w.err != nil {
+	}
 	w.mainWindow.Close()
 }
 
-func (w *ProgressWindow) RequestedCancel() bool {
+func (w *progressWindow) RequestedCancel() bool {
 	return w.requestedCancel
 }
