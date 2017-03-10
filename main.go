@@ -24,6 +24,8 @@ func main() {
 	var extractErr error
 	var uiErr error
 
+	PrintVersion()
+
 	if len(os.Args) != 2 {
 		fmt.Printf("Usage: %s <archive>\n", os.Args[0])
 		return

@@ -1,11 +1,12 @@
-# git diff-index --quiet HEAD --        // returns 1 if UNclean
-# you can also use "go generate" to trigger a script that fills in a "version.go" file ???
-# check for set SYSTEMROOT envvar --> windows
-
-LD_FLAGS = -s -w -H windowsgui
+LD_FLAGS = -H windowsgui
+LD_FLAGS_RELEASE = -s -w
 
 build:
 	go build -ldflags="$(LD_FLAGS)"
+
+# Needs: go get github.com/ahmetb/govvv
+release:
+	govvv build -ldflags="$(LD_FLAGS) $(LD_FLAGS_RELEASE)"
 
 # Needs: go get github.com/akavel/rsrc
 resources:
@@ -13,10 +14,9 @@ resources:
 	
 clean:
 	rm gunarchiver.exe
-	rm rsrc.syso
 
-dist:
-	zip gunarchiver.zip gunarchiver.exe README.md LICENSE
+dist: release
+	zip gunarchiver-bin.zip gunarchiver.exe README.md LICENSE VERSION
 
 test:
 	go test ./...

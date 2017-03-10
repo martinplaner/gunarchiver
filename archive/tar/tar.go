@@ -10,9 +10,8 @@ import (
 	"os"
 	"strings"
 
-	"compress/gzip"
-
 	"archive/tar"
+	"compress/gzip"
 
 	"github.com/martinplaner/gunarchiver/archive"
 )
