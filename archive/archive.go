@@ -87,6 +87,7 @@ func Extract(a Archive, path string, progressChan chan progress.Progress, should
 
 		percentage = calcPercentage(currentFileNum, a.NumFiles())
 		progressChan <- progress.Progress{CurrentFile: file.Path(), Percentage: percentage}
+		file.Close()
 	}
 }
 

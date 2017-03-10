@@ -28,10 +28,18 @@ type format struct {
 
 var formats []format
 
+// RegisterFormat registers an archive format for use by Decode.
+// Name is the name of the format, like "zip", "tar" or "rar".
+// Matches is a function that determines if the format is capable of reading the archive from reader r.
+// Decode is the function that decodes the archive.
 func RegisterFormat(name string, matches func(filename string, r io.Reader) bool, decode func(*os.File) (Archive, error)) {
 	formats = append(formats, format{name, matches, decode})
 }
 
+// Decode decodes an archive in a registered format.
+// The string returned is the format name used during format registration.
+// Format registration is typically done by an init function in the codec-
+// specific package.
 func Decode(file *os.File) (Archive, string, error) {
 	format := detect(file)
 	if format.decode == nil {
@@ -41,6 +49,7 @@ func Decode(file *os.File) (Archive, string, error) {
 	return m, format.name, err
 }
 
+// detect tries to match the given archive file with a registered format.
 func detect(file *os.File) format {
 	for _, format := range formats {
 		matches := format.matches(file.Name(), file)

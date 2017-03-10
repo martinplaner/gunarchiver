@@ -25,7 +25,6 @@ func TestTrash(t *testing.T) {
 		}
 	}()
 
-	// DO STUFF HERE
 	if err := MoveToTrash(file.Name()); err != nil {
 		t.Errorf("could not execute syscall: %v", err)
 	}

@@ -17,3 +17,6 @@ clean:
 
 dist:
 	zip gunarchiver.zip gunarchiver.exe README.md LICENSE
+
+test:
+	go test ./...

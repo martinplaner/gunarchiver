@@ -91,6 +91,10 @@ func (f *file) Read(p []byte) (n int, err error) {
 }
 
 func (f *file) Close() error {
+	if !f.isOpen {
+		return nil
+	}
+
 	err := f.r.Close()
 	if err != nil {
 		return err
