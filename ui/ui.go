@@ -1,3 +1,7 @@
+// Copyright 2017 Martin Planer. All rights reserved.
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file.
+
 // Package ui is the abstraction layer for the user interface and defines all necessary interfaces
 // that need to be implemented by concrete UI implementations.
 package ui

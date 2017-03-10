@@ -16,6 +16,7 @@ gunarchiver (Go Unarchiver) is a minimalistic archive extraction tool with a few
 - Preferences pane for customization (+ persistent config).
 - i18n (currently hardcoded to english)
 - Add (nicer) application icon
+- Fine(r) grained progress updates (currently updates only after every file in the archive)
 
 # License
 

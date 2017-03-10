@@ -1,3 +1,7 @@
+// Copyright 2017 Martin Planer. All rights reserved.
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file.
+//
 // Inspired by https://golang.org/src/image/format.go, licensed under:
 //
 // Copyright 2010 The Go Authors. All rights reserved.

@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
+// Package zip provides support for reading and extracting ZIP archives.
 package zip
 
 import (

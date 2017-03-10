@@ -1,3 +1,9 @@
+// Copyright 2017 Martin Planer. All rights reserved.
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file.
+
+// Windows specific trash implementation using WINAPI calls.
+
 package trash
 
 import (
