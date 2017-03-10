@@ -11,6 +11,8 @@ import (
 	"path/filepath"
 
 	"github.com/martinplaner/gunarchiver/archive"
+	_ "github.com/martinplaner/gunarchiver/archive/rar"
+	_ "github.com/martinplaner/gunarchiver/archive/tar"
 	_ "github.com/martinplaner/gunarchiver/archive/zip"
 
 	"github.com/martinplaner/gunarchiver/progress"
