@@ -80,8 +80,6 @@ func (f *file) Close() error {
 func matchesTarGz(filename string, r io.Reader) bool {
 	// Check zip suffix
 	if strings.HasSuffix(strings.ToLower(filename), ".tar.gz") {
-		//|| // Only .tar.gz for now...
-		//strings.HasSuffix(strings.ToLower(filename), ".tar.bz2") {
 		return true
 	}
 
@@ -110,6 +108,8 @@ func decodeTarGz(file *os.File) (archive.Archive, error) {
 	}
 
 	tr := tar.NewReader(r)
+
+	// TODO: implement numFiles
 
 	return &tarArchive{
 		file: file,

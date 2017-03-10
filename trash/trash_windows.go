@@ -12,15 +12,6 @@ import (
 	"unsafe"
 )
 
-var ()
-
-//type (
-//	HWND         uintptr
-//	UINT         uint32
-//	PCZZTSTR     *uint16
-//	FILEOP_FLAGS uint16
-//)
-
 type SHFILEOPSTRUCT struct {
 	hwnd                  uintptr // HWND         hwnd;
 	wFunc                 uint32  // UINT         wFunc; -- 32bit; win32 api after all...
@@ -63,12 +54,9 @@ func MoveToTrash(path string) error {
 	}
 
 	fileOp := &SHFILEOPSTRUCT{
-		//hwnd : nil?,
-		wFunc: FO_DELETE,
-		pFrom: pFrom, // how to convert Go string to *uint16 ?
-		//pTo : nil,                 // should be set to NULL according to doc. == nil?
+		wFunc:  FO_DELETE,
+		pFrom:  pFrom, // *uint16 string
 		fFlags: FOF_ALLOWUNDO,
-		// fAnyOperationsAborted:  // out-Param? result
 	}
 
 	_, _, errno := syscall.Syscall(shFileOperationW, 1, uintptr(unsafe.Pointer(fileOp)), 0, 0)
