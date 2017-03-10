@@ -15,22 +15,26 @@ import (
 	"github.com/martinplaner/gunarchiver/progress"
 
 	"github.com/martinplaner/gunarchiver/archive"
+	_ "github.com/martinplaner/gunarchiver/archive/tar"
 	_ "github.com/martinplaner/gunarchiver/archive/zip"
 )
 
 var testDataDir = "testdata"
 var basenames = []string{"single", "multiple", "deep", "subfolder"}
 var formats = map[string][]string{
-	"zip": []string{"zip"},
+	"zip":    []string{"zip"},
+	"tar.gz": []string{"tar.gz"},
 }
 
 func TestArchives(t *testing.T) {
 	for _, exts := range formats {
 		for _, ext := range exts {
 			for _, basename := range basenames {
-				if err := testArchive(basename, ext); err != nil {
-					t.Error(err)
-				}
+				t.Run(basename+"."+ext, func(t *testing.T) {
+					if err := testArchive(basename, ext); err != nil {
+						t.Error(err)
+					}
+				})
 			}
 		}
 	}
