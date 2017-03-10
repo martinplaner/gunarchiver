@@ -18,7 +18,7 @@ gunarchiver (Go Unarchiver) is a minimalistic archive extraction tool with a few
 - Add (nicer) application icon
 - Fine(r) grained progress updates (currently updates only after every file in the archive)
 
-# License
+## License
 
 Copyright 2017 Martin Planer. All rights reserved.
 Use of this source code is governed by a BSD-style
