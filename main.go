@@ -14,6 +14,7 @@ import (
 	_ "github.com/martinplaner/gunarchiver/archive/zip"
 
 	"github.com/martinplaner/gunarchiver/progress"
+	"github.com/martinplaner/gunarchiver/trash"
 	"github.com/martinplaner/gunarchiver/ui"
 )
 
@@ -62,10 +63,9 @@ func extractArchiveAndDelete(path string, progressChan chan progress.Progress, s
 		return err
 	}
 
-	// TODO: uncomment [DEBUG]
-	//if err := trash.MoveToTrash(path); err != nil {
-	//	return err
-	//}
+	if err := trash.MoveToTrash(path); err != nil {
+		return err
+	}
 
 	return nil
 }
