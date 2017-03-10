@@ -19,6 +19,7 @@ import (
 	"github.com/martinplaner/gunarchiver/progress"
 
 	"github.com/martinplaner/gunarchiver/archive"
+	_ "github.com/martinplaner/gunarchiver/archive/rar"
 	_ "github.com/martinplaner/gunarchiver/archive/tar"
 	_ "github.com/martinplaner/gunarchiver/archive/zip"
 )
@@ -28,6 +29,7 @@ var basenames = []string{"single", "multiple", "deep", "subfolder"}
 var formats = map[string][]string{
 	"zip":    []string{"zip"},
 	"tar.gz": []string{"tar.gz"},
+	"rar":    []string{"rar"},
 }
 
 func TestArchives(t *testing.T) {
