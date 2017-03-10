@@ -1,5 +1,6 @@
 # ignore binary
 gunarchiver
+*-bin.zip
 
 # ignore Jetbrains IDE project files
 .idea
