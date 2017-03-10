@@ -29,42 +29,36 @@ func (w *progressWindow) Show() error {
 	main := MainWindow{
 		AssignTo: &w.mainWindow,
 		Title:    "gunarchiver",
-		Size:     Size{400, 100},
+		MinSize:  Size{400, 100},
 		Layout:   VBox{},
 		DataBinder: DataBinder{
 			AssignTo:   &w.dataBinder,
 			DataSource: w.progress,
 		},
 		Children: []Widget{
-			HSplitter{
-				Children: []Widget{
-					Label{
-						Text: "Extracting:",
-					},
-					Label{
-						AssignTo: &w.currentFile,
-						Text:     "Starting...",
-					},
-				},
+			Label{
+				AssignTo: &w.currentFile,
+				Text:     "Starting...",
 			},
-			HSplitter{
+			Composite{
+				Layout: Grid{Columns: 4},
 				Children: []Widget{
 					ProgressBar{
-						AssignTo:           &w.progressBar,
-						MaxValue:           100,
-						AlwaysConsumeSpace: true,
+						ColumnSpan: 3,
+						AssignTo:   &w.progressBar,
+						MaxValue:   100,
 					},
 					PushButton{
-						AssignTo: &cancelButton,
-						Text:     "Cancel",
-						MaxSize:  Size{50, 50},
+						ColumnSpan: 1,
+						AssignTo:   &cancelButton,
+						Text:       "Cancel",
+						MaxSize:    Size{50, 50},
 						OnClicked: func() {
 							cancelButton.SetText("Canceling...")
 							cancelButton.SetEnabled(false)
 							w.requestedCancel = true
 						},
-					},
-				},
+					}},
 			},
 		},
 	}
@@ -81,7 +75,7 @@ func (w *progressWindow) Update(p progress.Progress) {
 	}
 
 	if w.currentFile != nil {
-		w.currentFile.SetText(p.CurrentFile)
+		w.currentFile.SetText("Extracting " + p.CurrentFile)
 	}
 
 	if w.mainWindow != nil {
