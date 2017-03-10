@@ -1,17 +1,21 @@
 # gunarchiver
 
-gunarchiver (Go Unarchiver) is a small archive extraction tool.
+gunarchiver (Go Unarchiver) is a minimalistic archive extraction tool with a few simple goals:
+
+- Single static binary (no external dependencies) with simple user interaction (just double click archive file).
+- Extract all contained file to the same folder as the archive.
+- Create a new folder, if there is more than on top-level file in the archive.
+- Move the archive to the recycle bin after successful extraction.
 
 # Future Work:
 
 (not necessarily implemented soon or ever)
 
-- Extend README ;)
-- UI for other platforms (Linux, macOS). But low priority since other platform already have similar tools that inspired me to develop this one.
-- Preferences pane for customization.
+- Handle symlinks and hardlinks properly (currently not supported)
+- UI and trash implementation for other platforms (Linux, macOS). But low priority since other platform already have similar (better) tools that inspired me to develop this one.
+- Preferences pane for customization (+ persistent config).
 - i18n (currently hardcoded to english)
-- Move files to trash (optionally?) instead of permanent delete
-- Add Program Icon
+- Add (nicer) application icon
 
 # License
 
