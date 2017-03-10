@@ -132,15 +132,10 @@ func decode(file *os.File) (archive.Archive, error) {
 		return nil, err
 	}
 
-	numFiles := 0
-	for range reader.File {
-		numFiles++
-	}
-
 	return &zipArchive{
 		file:     file,
 		zip:      reader,
-		numFiles: numFiles,
+		numFiles: len(reader.File),
 	}, nil
 }
 
