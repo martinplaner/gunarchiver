@@ -2,27 +2,22 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"os"
 	"path/filepath"
 
-	"log"
-
-	"context"
-
-	"sync"
-
-	"time"
-
 	"github.com/martinplaner/gunarchiver/archive"
 	_ "github.com/martinplaner/gunarchiver/archive/zip"
+
 	"github.com/martinplaner/gunarchiver/progress"
 	"github.com/martinplaner/gunarchiver/ui"
 )
 
+var userInterface ui.UserInterface
+
 func main() {
 	var extractErr error
 	var uiErr error
-	var wg sync.WaitGroup
 
 	if len(os.Args) != 2 {
 		fmt.Printf("Usage: %s <archive>\n", os.Args[0])
@@ -30,71 +25,48 @@ func main() {
 	}
 
 	archivePath := os.Args[1]
-	pChan := make(chan progress.Progress)
-	ctx, cancel := context.WithCancel(context.WithValue(context.Background(), progress.ProgressChan, pChan))
+	progressChan := make(chan progress.Progress)
+	progressWindow := userInterface.NewProgressWindow()
 
-	wg.Add(1)
+	// Kick off extraction
 	go func() {
-		extractErr = extractArchiveAndDelete(ctx, archivePath, true)
-		pChan <- progress.Progress{Done: true}
-		close(pChan)
-		wg.Done()
+		extractErr = extractArchiveAndDelete(archivePath, progressChan, progressWindow.RequestedCancel)
+		close(progressChan)
 	}()
 
-	progressWindow := ui.Default.NewProgressWindow(cancel)
-
-	wg.Add(1)
-	go func() {
-		var currentProgress progress.Progress
-		var progressInterval = 500 * time.Millisecond
-	LOOP:
-		for {
-			select {
-			case p, ok := <-pChan:
-				if !ok {
-					break LOOP
-				}
-				currentProgress = p
-			case <-time.After(progressInterval):
-				progressWindow.Update(currentProgress)
-			}
-		}
-		progressWindow.Close()
-		wg.Done()
-	}()
+	// Synchronize extraction and UI progress
+	go progress.Sync{
+		UpdateCloser: progressWindow,
+		Progress:     progressChan,
+	}.Run()
 
 	uiErr = progressWindow.Show()
 
-	wg.Wait()
-
 	if extractErr != nil {
-		errorWindow := ui.Default.NewErrorWindow()
-		errorWindow.Show(extractErr.Error())
-		log.Fatalln(extractErr)
+		errorWindow := userInterface.NewErrorWindow(extractErr.Error())
+		errorWindow.Show()
+		log.Fatalln("could not extract archive:", extractErr)
 	}
 
 	if uiErr != nil {
-		errorWindow := ui.Default.NewErrorWindow()
-		errorWindow.Show(uiErr.Error())
-		log.Fatalln(uiErr)
+		log.Fatalln("could not show user interface:", uiErr)
 	}
 }
 
-func extractArchiveAndDelete(ctx context.Context, path string, deleteAfter bool) error {
-	if err := extractArchive(ctx, path); err != nil {
+func extractArchiveAndDelete(path string, progressChan chan progress.Progress, shouldCancel func() bool) error {
+	if err := extractArchive(path, progressChan, shouldCancel); err != nil {
 		return err
 	}
 
-	if deleteAfter {
-		if err := os.Remove(path); err != nil {
-			return err
-		}
-	}
+	// TODO: uncomment [DEBUG]
+	//if err := trash.MoveToTrash(path); err != nil {
+	//	return err
+	//}
 
 	return nil
 }
 
-func extractArchive(ctx context.Context, path string) error {
+func extractArchive(path string, progressChan chan progress.Progress, shouldCancel func() bool) error {
 	f, err := os.Open(path)
 	if err != nil {
 		return fmt.Errorf("could not open file: %v", err)
@@ -114,7 +86,7 @@ func extractArchive(ctx context.Context, path string) error {
 		archive.CreateDir(baseDir)
 	}
 
-	if err := archive.Extract(ctx, a, baseDir); err != nil {
+	if err := archive.Extract(a, baseDir, progressChan, shouldCancel); err != nil {
 		return fmt.Errorf("could not extract archive: %v", err)
 	}
 

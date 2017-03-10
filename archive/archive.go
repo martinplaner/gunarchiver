@@ -1,13 +1,20 @@
+// Copyright 2017 Martin Planer. All rights reserved.
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file.
+
+// Package archive implements functions for decoding and extracting archives such as ZIP, tar.gz or RAR.
 package archive
 
 import (
-	"context"
 	"fmt"
 	"io"
 	"os"
 	"path/filepath"
 	"strings"
 
+	"time"
+
+	"github.com/martinplaner/gunarchiver/debug"
 	"github.com/martinplaner/gunarchiver/progress"
 )
 
@@ -15,6 +22,8 @@ import (
 type Archive interface {
 	// Basename returns the base name of the archive file, without file extension or path.
 	Basename() string
+	// NumFiles returns the total number of files in the archive
+	NumFiles() int
 	// Next returns the next file in the archive. err == io.EOF on end of archive.
 	Next() (File, error)
 	// Reset resets the current position to the start of the archive.
@@ -33,29 +42,32 @@ type File interface {
 	io.ReadCloser
 }
 
-// Extract extracts the Archive a to the specified path
-func Extract(ctx context.Context, a Archive, path string) error {
-	pChan, pChanOk := ctx.Value(progress.ProgressChan).(chan progress.Progress)
+// Extract extracts the Archive a to the specified path and reports progress to the supplied progressChan.
+// If the supplied shouldCancel func returns true, the extraction will get canceled as soon as possible.
+func Extract(a Archive, path string, progressChan chan progress.Progress, shouldCancel func() bool) error {
+	progressChan <- progress.Progress{CurrentFile: "Starting extraction..."}
 
+	currentFileNum := 0
+	percentage := 0
 	for {
-		select {
-		case <-ctx.Done():
-			return ctx.Err()
-		default:
+		if shouldCancel() {
+			// Aborting extraction as per user's request
+			progressChan <- progress.Progress{CurrentFile: "Canceled extraction!", Percentage: 100}
+			return nil
 		}
-
 		file, err := a.Next()
 		if err == io.EOF {
 			// end of archive; finished
+			progressChan <- progress.Progress{CurrentFile: "Finished extraction!", Percentage: 100}
 			return nil
 		}
 		if err != nil {
 			return err
 		}
 
-		if pChanOk {
-			pChan <- progress.Progress{CurrentFile: file.Path(), Percentage: 50}
-		}
+		currentFileNum++
+		progressChan <- progress.Progress{CurrentFile: file.Path(), Percentage: percentage}
+		debug.Wait(1 * time.Second)
 
 		fullPath := filepath.Join(path, file.Path())
 
@@ -64,16 +76,22 @@ func Extract(ctx context.Context, a Archive, path string) error {
 			if err := CreateDir(fullPath); err != nil {
 				return err
 			}
-			continue
+
 		case file.Mode().IsRegular():
 			if err := extractFile(file, fullPath); err != nil {
 				return err
 			}
-			continue
 
 			// TODO: handle hard-/symlinks and special files?
 		}
+
+		percentage = calcPercentage(currentFileNum, a.NumFiles())
+		progressChan <- progress.Progress{CurrentFile: file.Path(), Percentage: percentage}
 	}
+}
+
+func calcPercentage(current, total int) int {
+	return int(float64(current) / float64(total) * 100)
 }
 
 func extractFile(file File, path string) error {

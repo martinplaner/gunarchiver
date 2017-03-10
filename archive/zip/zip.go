@@ -1,3 +1,7 @@
+// Copyright 2017 Martin Planer. All rights reserved.
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file.
+
 package zip
 
 import (
@@ -14,13 +18,18 @@ import (
 const zipFileSignature = "PK\x03\x04"
 
 type zipArchive struct {
-	file    *os.File
-	zip     *zip.Reader
-	current int
+	file     *os.File
+	zip      *zip.Reader
+	current  int
+	numFiles int
 }
 
 func (a *zipArchive) Basename() string {
 	return archive.Basename(a.file.Name())
+}
+
+func (a *zipArchive) NumFiles() int {
+	return a.numFiles
 }
 
 func (a *zipArchive) Next() (archive.File, error) {
@@ -114,10 +123,19 @@ func decode(file *os.File) (archive.Archive, error) {
 	}
 
 	reader, err := zip.NewReader(file, stat.Size())
+	if err != nil {
+		return nil, err
+	}
+
+	numFiles := 0
+	for range reader.File {
+		numFiles++
+	}
 
 	return &zipArchive{
-		file: file,
-		zip:  reader,
+		file:     file,
+		zip:      reader,
+		numFiles: numFiles,
 	}, nil
 }
 

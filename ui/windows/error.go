@@ -9,9 +9,10 @@ import (
 
 type errorWindow struct {
 	mainWindow *walk.MainWindow
+	message    string
 }
 
-func (w *errorWindow) Show(message string) error {
+func (w *errorWindow) Show() error {
 
 	var dialog *walk.Dialog
 	var acceptPB *walk.PushButton
@@ -28,7 +29,7 @@ func (w *errorWindow) Show(message string) error {
 			VSplitter{
 				Children: []Widget{
 					Label{
-						Text: message,
+						Text: w.message,
 					},
 					PushButton{
 						Text: "OK",

@@ -3,20 +3,19 @@
 package windows
 
 import (
-	"context"
-
 	"github.com/lxn/walk"
 	. "github.com/lxn/walk/declarative"
 	"github.com/martinplaner/gunarchiver/progress"
-	"github.com/martinplaner/gunarchiver/ui"
 )
 
 type progressWindow struct {
 	mainWindow      *walk.MainWindow
 	progressBar     *walk.ProgressBar
+	currentFile     *walk.Label
+	dataBinder      *walk.DataBinder
 	requestedCancel bool
-	cancel          context.CancelFunc
 	err             error
+	progress        *progress.Progress
 }
 
 func (w *progressWindow) Show() error {
@@ -28,21 +27,37 @@ func (w *progressWindow) Show() error {
 		Title:    "gunarchiver",
 		Size:     Size{400, 100},
 		Layout:   VBox{},
+		DataBinder: DataBinder{
+			AssignTo:   &w.dataBinder,
+			DataSource: w.progress,
+		},
 		Children: []Widget{
 			HSplitter{
 				Children: []Widget{
+					Label{
+						Text: "Extracting:",
+					},
+					Label{
+						AssignTo: &w.currentFile,
+						Text:     "Starting...",
+					},
+				},
+			},
+			HSplitter{
+				Children: []Widget{
 					ProgressBar{
-						AssignTo: &w.progressBar,
-						MaxValue: ui.ProgressMaxValue,
+						AssignTo:           &w.progressBar,
+						MaxValue:           100,
+						AlwaysConsumeSpace: true,
 					},
 					PushButton{
 						AssignTo: &cancelButton,
 						Text:     "Cancel",
+						MaxSize:  Size{50, 50},
 						OnClicked: func() {
 							cancelButton.SetText("Canceling...")
 							cancelButton.SetEnabled(false)
 							w.requestedCancel = true
-							w.cancel()
 						},
 					},
 				},
@@ -55,13 +70,19 @@ func (w *progressWindow) Show() error {
 }
 
 func (w *progressWindow) Update(p progress.Progress) {
+	*w.progress = p
+
 	if w.progressBar != nil {
 		w.progressBar.SetValue(p.Percentage)
 	}
 
+	if w.currentFile != nil {
+		w.currentFile.SetText(p.CurrentFile)
+	}
+
 	if w.mainWindow != nil {
 		pi := w.mainWindow.ProgressIndicator()
-		pi.SetTotal(uint32(ui.ProgressMaxValue))
+		pi.SetTotal(100)
 		pi.SetCompleted(uint32(p.Percentage))
 	}
 }

@@ -1,34 +1,30 @@
+// Package ui is the abstraction layer for the user interface and defines all necessary interfaces
+// that need to be implemented by concrete UI implementations.
 package ui
 
-import (
-	"context"
+import "github.com/martinplaner/gunarchiver/progress"
 
-	"github.com/martinplaner/gunarchiver/progress"
-)
-
-var ProgressMaxValue = 100
-
-var Default UserInterface
-
+// Window is the common interface for all windows.
 type Window interface {
+	Show() error
 	Close()
 }
 
+// ProgressWindow is the window that is shown during the extraction process.
 type ProgressWindow interface {
 	Window
-	Show() error
 	// Update updates the progress.
-	// Must be called _after_ calling Show()!
 	Update(progress.Progress)
 	RequestedCancel() bool
 }
 
+// ErrorWindow is the windows that is shown after an error occurred.
 type ErrorWindow interface {
 	Window
-	Show(message string) error
 }
 
+// UserInterface is the factory for creating new windows.
 type UserInterface interface {
-	NewProgressWindow(context.CancelFunc) ProgressWindow
-	NewErrorWindow() ErrorWindow
+	NewProgressWindow() ProgressWindow
+	NewErrorWindow(message string) ErrorWindow
 }
