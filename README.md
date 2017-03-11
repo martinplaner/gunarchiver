@@ -10,6 +10,8 @@ gunarchiver (Go Unarchiver) is a minimalistic archive extraction tool with a few
 This was primarily a project born out of the frustration of having to navigate through several layers of context menus of 7zip
 and manually moving files, just to have them structured the way I like it. This tool does it all in one double-click.
 
+![screenshot](https://raw.githubusercontent.com/martinplaner/gunarchiver/master/doc/screenshot.png)
+
 NOTE: The program is currently windows only due to better alternatives already available for other platforms.
 
 ## Supported formats
