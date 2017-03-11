@@ -13,10 +13,10 @@ resources:
 	rsrc -manifest gunarchiver.manifest -ico gunarchiver.ico -o rsrc.syso
 	
 clean:
-	rm gunarchiver.exe
+	rm gunarchiver.exe gunarchiver-win64.zip
 
 dist: release
-	zip gunarchiver-bin.zip gunarchiver.exe README.md LICENSE VERSION
+	zip gunarchiver-win64.zip gunarchiver.exe README.md CHANGELOG.md LICENSE VERSION
 
 test:
 	go test ./...
