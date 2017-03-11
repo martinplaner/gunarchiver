@@ -6,17 +6,23 @@
 package archive
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	"os"
 	"path/filepath"
 	"strings"
-
 	"time"
 
 	"github.com/martinplaner/gunarchiver/debug"
 	"github.com/martinplaner/gunarchiver/progress"
 )
+
+var ErrCanceled = errors.New("the process was canceled by user request")
+
+func IsCanceled(err error) bool {
+	return err == ErrCanceled
+}
 
 // Archive represent an archive and provides methods for iterating through its files.
 type Archive interface {
@@ -43,7 +49,8 @@ type File interface {
 }
 
 // Extract extracts the Archive a to the specified path and reports progress to the supplied progressChan.
-// If the supplied shouldCancel func returns true, the extraction will get canceled as soon as possible.
+// If the supplied shouldCancel func returns true, the extraction will get canceled as soon as possible
+// and return ErrCanceled. Callers should check using IsCanceled.
 func Extract(a Archive, path string, progressChan chan progress.Progress, shouldCancel func() bool) error {
 	progressChan <- progress.Progress{CurrentFile: "Starting extraction..."}
 
@@ -53,7 +60,7 @@ func Extract(a Archive, path string, progressChan chan progress.Progress, should
 		if shouldCancel() {
 			// Aborting extraction as per user's request
 			progressChan <- progress.Progress{CurrentFile: "Canceled extraction!", Percentage: 100}
-			return nil
+			return ErrCanceled
 		}
 		file, err := a.Next()
 		if err == io.EOF {

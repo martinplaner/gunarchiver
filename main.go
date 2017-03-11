@@ -63,7 +63,11 @@ func main() {
 }
 
 func extractArchiveAndDelete(path string, progressChan chan progress.Progress, shouldCancel func() bool) error {
-	if err := extractArchive(path, progressChan, shouldCancel); err != nil {
+
+	err := extractArchive(path, progressChan, shouldCancel)
+	if archive.IsCanceled(err) {
+		return nil
+	} else if err != nil {
 		return err
 	}
 
@@ -94,7 +98,10 @@ func extractArchive(path string, progressChan chan progress.Progress, shouldCanc
 		archive.CreateDir(baseDir)
 	}
 
-	if err := archive.Extract(a, baseDir, progressChan, shouldCancel); err != nil {
+	err = archive.Extract(a, baseDir, progressChan, shouldCancel)
+	if archive.IsCanceled(err) {
+		return err
+	} else if err != nil {
 		return fmt.Errorf("could not extract archive: %v", err)
 	}
 
