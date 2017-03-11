@@ -7,13 +7,27 @@ gunarchiver (Go Unarchiver) is a minimalistic archive extraction tool with a few
 - Create a new folder, if there is more than on top-level file in the archive.
 - Move the archive to the recycle bin after successful extraction.
 
-## Formats
+This was primarily a project born out of the frustration of having to navigate through several layers of context menus of 7zip
+and manually moving files, just to have them structured the way I like it. This tool does it all in one double-click.
 
-Currently supported formats are: .zip, .tar.gz
+NOTE: The program is currently windows only due to better alternatives already available for other platforms.
 
-## Future Work:
+## Supported formats
 
-(not necessarily implemented soon or ever -- works for me ;)
+Currently supported formats are: .zip, .tar.gz and .rar
+
+No support for multi-volume archives or password protected files (yet).
+
+## Installation
+
+Either `go get github.com/martinplaner/gunarchiver` and then `go build -ldflags="-H windowsgui"` in the project directory OR download the pre-compiled binary from the GitHub releases page.
+
+Put the binary anywhere you want and associate the proper file extensions with the program.
+You're done, no third step.
+
+## Possible future work and known problems:
+
+(not necessarily implemented soon or ever -- works for me in the current state ;)
 
 - Handle symlinks and hardlinks properly (currently not supported)
 - UI and trash implementation for other platforms (Linux, macOS). But low priority since other platform already have similar (better) tools that inspired me to develop this one.
