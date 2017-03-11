@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 Currently no changes or additions.
 
+## [0.2.1] - 2017-03-11
+### Changed
+- Fixed files getting trashed when extraction is canceled
 
 ## [0.2.0] - 2017-03-11
 ### Added
@@ -25,5 +28,6 @@ Currently no changes or additions.
 
 
 [Unreleased]: https://github.com/martinplaner/gunarchiver/tree/develop
+[0.2.1]: https://github.com/martinplaner/gunarchiver/releases/tag/v0.2.1
 [0.2.0]: https://github.com/martinplaner/gunarchiver/releases/tag/v0.2.0
 [0.1.0]: https://github.com/martinplaner/gunarchiver/releases/tag/v0.1.0
