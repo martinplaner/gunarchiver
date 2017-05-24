@@ -18,8 +18,10 @@ import (
 	"github.com/martinplaner/gunarchiver/progress"
 )
 
+// ErrCanceled is the error returned by Extract, when the process was canceled by the user
 var ErrCanceled = errors.New("the process was canceled by user request")
 
+// IsCanceled returns true if err represents that process was canceled by the user
 func IsCanceled(err error) bool {
 	return err == ErrCanceled
 }
@@ -172,5 +174,4 @@ func HasSingleRoot(a Archive) bool {
 		}
 		rootElems[first] = true
 	}
-	return true
 }

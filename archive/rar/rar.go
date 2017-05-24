@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-// Package zip provides support for reading and extracting ZIP archives.
+// Package rar provides support for reading and extracting ZIP archives.
 package rar
 
 import (
@@ -83,7 +83,7 @@ func matches(filename string, r io.Reader) bool {
 		return true
 	}
 
-	r, err := rardecode.NewReader(r, "")
+	_, err := rardecode.NewReader(r, "")
 	if err != nil {
 		return false
 	}

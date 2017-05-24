@@ -5,6 +5,7 @@
 // Package progress provides data types for sharing progress between components.
 package progress
 
+// UpdateCloser is the interface implemented by dialog windows to update the progress and/or close the dialog.
 type UpdateCloser interface {
 	Update(Progress)
 	Close()
@@ -22,6 +23,7 @@ type Sync struct {
 	Progress     chan Progress
 }
 
+// Run starts the progress update loop
 func (s Sync) Run() {
 	for p := range s.Progress {
 		s.UpdateCloser.Update(p)

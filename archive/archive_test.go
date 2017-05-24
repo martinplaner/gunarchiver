@@ -27,9 +27,9 @@ import (
 var testDataDir = "testdata"
 var basenames = []string{"single", "multiple", "deep", "subfolder"}
 var formats = map[string][]string{
-	"zip":    []string{"zip"},
-	"tar.gz": []string{"tar.gz"},
-	"rar":    []string{"rar"},
+	"zip":    {"zip"},
+	"tar.gz": {"tar.gz"},
+	"rar":    {"rar"},
 }
 
 func TestArchives(t *testing.T) {
@@ -93,7 +93,7 @@ func compareDirs(a, b string) bool {
 		return false
 	}
 
-	for i, _ := range aFiles {
+	for i := range aFiles {
 		aRel, aErr := filepath.Rel(a, aFiles[i])
 		bRel, bErr := filepath.Rel(b, bFiles[i])
 
