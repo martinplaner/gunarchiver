@@ -2,6 +2,7 @@
 
 [![Current Release](https://img.shields.io/github/release/martinplaner/gunarchiver.svg)](https://github.com/martinplaner/gunarchiver/releases/latest)
 [![Go Report Card](https://goreportcard.com/badge/github.com/martinplaner/gunarchiver)](https://goreportcard.com/report/github.com/martinplaner/gunarchiver)
+[![GoDoc](https://godoc.org/github.com/martinplaner/gunarchiver?status.svg)](https://godoc.org/github.com/martinplaner/gunarchiver)
 [![License](https://img.shields.io/badge/LICENSE-BSD-ff69b4.svg)](https://github.com/martinplaner/gunarchiver/blob/master/LICENSE)
 
 gunarchiver (Go Unarchiver) is a minimalistic archive extraction tool with a few simple goals:
