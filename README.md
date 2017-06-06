@@ -1,6 +1,7 @@
 # gunarchiver
 
 [![Current Release](https://img.shields.io/github/release/martinplaner/gunarchiver.svg)](https://github.com/martinplaner/gunarchiver/releases/latest)
+[![Build Status](https://travis-ci.org/martinplaner/gunarchiver.svg?branch=master)](https://travis-ci.org/martinplaner/gunarchiver)
 [![Go Report Card](https://goreportcard.com/badge/github.com/martinplaner/gunarchiver)](https://goreportcard.com/report/github.com/martinplaner/gunarchiver)
 [![GoDoc](https://godoc.org/github.com/martinplaner/gunarchiver?status.svg)](https://godoc.org/github.com/martinplaner/gunarchiver)
 [![License](https://img.shields.io/badge/LICENSE-BSD-ff69b4.svg)](https://github.com/martinplaner/gunarchiver/blob/master/LICENSE)
