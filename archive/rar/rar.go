@@ -98,11 +98,19 @@ func decode(file *os.File) (archive.Archive, error) {
 		return nil, err
 	}
 
-	// TODO: implement numFiles
+	count := 0
+	for {
+		_, err := r.Next()
+		if err != nil {
+			break
+		}
+		count++
+	}
 
 	return &rarArchive{
-		file: file,
-		rar:  r,
+		file:     file,
+		rar:      r,
+		numFiles: count,
 	}, nil
 }
 
