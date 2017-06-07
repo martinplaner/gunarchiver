@@ -95,7 +95,10 @@ func extractArchive(path string, progressChan chan progress.Progress, shouldCanc
 
 	if !singleRoot {
 		baseDir = filepath.Join(baseDir, a.Basename())
-		archive.CreateDir(baseDir)
+		err = archive.CreateDir(baseDir)
+		if err != nil {
+			return fmt.Errorf("could not create root directory: %v", err)
+		}
 	}
 
 	err = archive.Extract(a, baseDir, progressChan, shouldCancel)
