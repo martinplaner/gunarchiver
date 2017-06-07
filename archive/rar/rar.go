@@ -14,10 +14,6 @@ import (
 	"github.com/nwaples/rardecode"
 )
 
-// Copyright 2017 Martin Planer. All rights reserved.
-// Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE file.
-
 type rarArchive struct {
 	file     *os.File
 	rar      *rardecode.Reader
@@ -107,11 +103,14 @@ func decode(file *os.File) (archive.Archive, error) {
 		count++
 	}
 
-	return &rarArchive{
+	a := &rarArchive{
 		file:     file,
 		rar:      r,
 		numFiles: count,
-	}, nil
+	}
+	a.Reset() // necessary because file counting iterates the whole archive
+
+	return a, nil
 }
 
 func init() {
