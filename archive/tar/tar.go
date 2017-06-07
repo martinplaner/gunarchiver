@@ -109,12 +109,23 @@ func decodeTarGz(file *os.File) (archive.Archive, error) {
 
 	tr := tar.NewReader(r)
 
-	// TODO: implement numFiles
+	count := 0
+	for {
+		_, err := tr.Next()
+		if err != nil {
+			break
+		}
+		count++
+	}
 
-	return &tarArchive{
-		file: file,
-		tar:  tr,
-	}, nil
+	a := &tarArchive{
+		file:     file,
+		tar:      tr,
+		numFiles: count,
+	}
+	a.Reset() // necessary because file counting iterates the whole archive
+
+	return a, nil
 }
 
 func init() {

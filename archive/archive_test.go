@@ -9,12 +9,11 @@ package archive_test
 // This may change in the future if I find a way to abstract this away.
 
 import (
+	"fmt"
 	"io/ioutil"
 	"os"
 	"path/filepath"
 	"testing"
-
-	"errors"
 
 	"github.com/martinplaner/gunarchiver/progress"
 
@@ -25,20 +24,41 @@ import (
 )
 
 var testDataDir = "testdata"
-var basenames = []string{"single", "multiple", "deep", "subfolder"}
+var testFiles = []struct {
+	basename string
+	numFiles int
+}{
+	{
+		"single",
+		1,
+	},
+	{
+		"multiple",
+		3,
+	},
+	{
+		"deep",
+		7,
+	},
+	{
+		"subfolder",
+		7,
+	},
+}
 var formats = map[string][]string{
 	"zip":    {"zip"},
 	"tar.gz": {"tar.gz"},
 	"rar":    {"rar"},
 }
 
-func TestArchives(t *testing.T) {
+func TestNumFiles(t *testing.T) {
 	for _, exts := range formats {
 		for _, ext := range exts {
-			for _, basename := range basenames {
-				t.Run(basename+"."+ext, func(t *testing.T) {
-					if err := testArchive(basename, ext); err != nil {
-						t.Error(err)
+			for _, testFile := range testFiles {
+				filename := testFile.basename + "." + ext
+				t.Run(filename, func(t *testing.T) {
+					if err := testNumFiles(filename, testFile.numFiles); err != nil {
+						t.Errorf("TestNumFiles - %s: %v", filename, err)
 					}
 				})
 			}
@@ -46,7 +66,42 @@ func TestArchives(t *testing.T) {
 	}
 }
 
-func testArchive(basename, ext string) error {
+func testNumFiles(filename string, expected int) error {
+	path := filepath.Join(testDataDir, filename)
+	file, err := os.Open(path)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+
+	a, _, err := archive.Decode(file)
+	if err != nil {
+		return err
+	}
+
+	if got := a.NumFiles(); got != expected {
+		return fmt.Errorf("numFiles mismatch: got %d, expected %d", got, expected)
+	}
+
+	return nil
+}
+
+func TestExtraction(t *testing.T) {
+	for _, exts := range formats {
+		for _, ext := range exts {
+			for _, testFile := range testFiles {
+				filename := testFile.basename + "." + ext
+				t.Run(filename, func(t *testing.T) {
+					if err := testExtraction(testFile.basename, ext); err != nil {
+						t.Errorf("TestExtraction - %s: %v", filename, err)
+					}
+				})
+			}
+		}
+	}
+}
+
+func testExtraction(basename, ext string) error {
 	filename := basename + "." + ext
 	path := filepath.Join(testDataDir, filename)
 	comparePath := filepath.Join(testDataDir, basename)
@@ -74,39 +129,47 @@ func testArchive(basename, ext string) error {
 		return err
 	}
 
-	if !compareDirs(tempDir, comparePath) {
-		return errors.New("dirs to not match!")
+	if err := compareDirs(tempDir, comparePath); err != nil {
+		return fmt.Errorf("error comparing dir structure: %v", err)
 	}
 
 	return nil
 }
 
-func compareDirs(a, b string) bool {
+func compareDirs(a, b string) error {
 	aFiles, aErr := getFileList(a)
 	bFiles, bErr := getFileList(b)
 
-	if aErr != nil || bErr != nil {
-		return false
+	if aErr != nil {
+		return aErr
+	}
+	if bErr != nil {
+		return bErr
 	}
 
-	if len(aFiles) != len(bFiles) {
-		return false
+	aLen := len(aFiles)
+	bLen := len(bFiles)
+	if aLen != bLen {
+		return fmt.Errorf("file list length does not match: %d != %d", aLen, bLen)
 	}
 
 	for i := range aFiles {
 		aRel, aErr := filepath.Rel(a, aFiles[i])
 		bRel, bErr := filepath.Rel(b, bFiles[i])
 
-		if aErr != nil || bErr != nil {
-			return false
+		if aErr != nil {
+			return aErr
+		}
+		if bErr != nil {
+			return bErr
 		}
 
 		if aRel != bRel {
-			return false
+			return fmt.Errorf("relative file paths do not match")
 		}
 	}
 
-	return true
+	return nil
 }
 
 func getFileList(path string) ([]string, error) {
