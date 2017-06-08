@@ -130,13 +130,13 @@ func extractFile(file File, path string) error {
 // Directory permissions for new folders; before umask
 const dirPerm = 0777
 
-// CreateDir creats the specified directory along with any necessary parent directories with 0777 permissions (before umask).
+// CreateDir creates the specified directory along with any necessary parent directories with 0777 permissions (before umask).
 func CreateDir(path string) error {
 	return os.MkdirAll(path, dirPerm)
 }
 
 // Basename returns the base name for a given file path, without a file extension or the path to the containing directory.
-// e.g. Basename("/home/user/test.txt") returns "test" and Basename("user/test.tar.gz") returns "test"
+// e.g. Basename("/home/user/test.txt") returns "test" and Basename("user/test.tar.gz") returns "test".
 // In general only single file extensions are supported, but this implementation contains a special case to remove the optional ".tar.*" suffix.
 func Basename(path string) string {
 	filename := filepath.Base(path)

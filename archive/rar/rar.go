@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-// Package rar provides support for reading and extracting ZIP archives.
+// Package rar provides support for reading and extracting RAR archives.
 package rar
 
 import (
